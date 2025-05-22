@@ -45,3 +45,10 @@ dependency-reduced-pom.xml
 *.swp
 *.bak
 *.tmp
+
+# Java crash logs
+hs_err_pid*.log
+hs_err_pid*.jfr
+
+# Output CSV files
+incibe_vulns_*.csv

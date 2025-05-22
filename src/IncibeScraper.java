@@ -17,6 +17,7 @@ public class IncibeScraper {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        ProxyConfigurator.configuration(scanner);
         LocalDate minDate = requestDate(scanner);
 
         int page = 0;
@@ -27,7 +28,7 @@ public class IncibeScraper {
             System.out.println("Processing page " + page + ": " + url);
 
             try {
-                Document doc = Jsoup.connect(url).get();
+                Document doc = SSLHelper.getConnection(url).get();
                 Elements entries = doc.select("div.node-vulnerabilities-teaser");
 
                 if (entries.isEmpty()) {
@@ -86,8 +87,15 @@ public class IncibeScraper {
                 break;
             }
         }
-        if (filtered.isEmpty()) {
-            System.out.println("No vulnerabilities found");
+        if (!filtered.isEmpty()) {
+            String outputFile = "incibe_vulns_" + LocalDate.now() + ".csv";
+            try {
+                CsvExporter.export(filtered, outputFile);
+            } catch (IOException e) {
+                throw new RuntimeException("[ERROR] There was an error processing the csv file: " + e.getMessage());
+            }
+        } else {
+            System.out.println("No vulnerabilities found.");
         }
     }
 
