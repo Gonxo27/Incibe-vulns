@@ -52,3 +52,5 @@ hs_err_pid*.jfr
 
 # Output CSV files
 incibe_vulns_*.csv
+
+api_key.txt

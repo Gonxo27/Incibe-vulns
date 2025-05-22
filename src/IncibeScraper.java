@@ -5,7 +5,6 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import exceptions.VulnerabilityException;
-import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
@@ -22,6 +21,7 @@ public class IncibeScraper {
 
         int page = 0;
         List<Vulnerability> filtered = new ArrayList<>();
+        String apiKey = APIKeyLoader.loadApiKey("api_key.txt");
 
         while(true) {
             String url = makeURL(minDate, page);
@@ -66,7 +66,11 @@ public class IncibeScraper {
                             continue;
                         }
 
-                        double severity = severityText.equals("CRÍTICA") ? 9.0 : 7.5;
+                        Double severity = NISTAPIClient.getCvssScore(cve, apiKey);
+                        if (severity == null) {
+                            System.out.println("[WARNING] Could not fetch CVSS score for " + cve + ". Using placeholder...");
+                            severity = -1.0;
+                        }
 
                         Vulnerability vuln = new Vulnerability(cve, date, severity, cvssVersion, description, link);
                         filtered.add(vuln);
